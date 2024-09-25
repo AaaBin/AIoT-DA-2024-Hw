@@ -1,30 +1,34 @@
 import numpy as np
 import matplotlib.pyplot as plt
+from sklearn.linear_model import LinearRegression
+from sklearn.metrics import mean_squared_error
 
 # Step 1: Generate random data
 np.random.seed(0)  # For reproducibility
-x = np.random.rand(100) * 10  # 100 random points between 0 and 10
-y = 2.5 * x + np.random.randn(100) * 2  # Linear relation with some noise
+x = np.random.rand(100, 1) * 10  # 100 random points between 0 and 10, reshaped for sklearn
+y = 2.5 * x.flatten() + np.random.randn(100) * 2  # Linear relation with some noise
 
-# Step 2: Calculate the regression line
-# Using the formula: y = mx + b
-# where m = (N * Σ(xy) - Σx * Σy) / (N * Σ(x^2) - (Σx)^2)
-# and b = (Σy - m * Σx) / N
+# Step 2: Create and fit the model
+model = LinearRegression()
+model.fit(x, y)
 
-N = len(x)
-m = (N * np.sum(x * y) - np.sum(x) * np.sum(y)) / (N * np.sum(x ** 2) - (np.sum(x)) ** 2)
-b = (np.sum(y) - m * np.sum(x)) / N
+# Step 3: Get the slope (m) and intercept (b)
+m = model.coef_[0]
+b = model.intercept_
 
 # Calculate the regression line
-regression_line = m * x + b
+regression_line = model.predict(x)
+# Step 4: Calculate Mean Squared Error
+mse = mean_squared_error(y, regression_line)
 
-# Step 3: Print data and regression line
+# Step 5: Print data, regression line, and MSE
 print("Generated Data Points:")
-for xi, yi in zip(x, y):
+for xi, yi in zip(x.flatten(), y):
     print(f"x: {xi:.2f}, y: {yi:.2f}")
 
 print("\nRegression Line:")
 print(f"y = {m:.2f}x + {b:.2f}")
+print(f"\nMean Squared Error: {mse:.2f}")
 
 # Plotting the data and regression line
 plt.scatter(x, y, color='blue', label='Data Points')
